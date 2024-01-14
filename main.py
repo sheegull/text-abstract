@@ -21,8 +21,11 @@ def extract_text_from_url(url):
   try:
     response = requests.get(url)
     response.raise_for_status() # Will raise an error for bad status codes
-    soup = BeautifulSoup(response.text, "html.parser")
-    return soup.get_text()
+    soup = BeautifulSoup(response.content, "html.parser", from_encoding='utf-8')
+    text = ''
+    for div in soup.find_all("div", class_="ly_contents-main"):
+      text += div.get_text(separator='\n', strip=True) + '\n\n'
+    return text
   except requests.HTTPError as http_err:
     print(f"HTTP error occurred: {http_err}")
   except Exception as err:
